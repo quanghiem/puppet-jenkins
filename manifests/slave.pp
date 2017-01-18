@@ -136,6 +136,7 @@ class jenkins::slave (
   $java_args                 = undef,
   $proxy_server              = undef,
   $swarm_client_args        = undef,
+  $service_provider          = $jenkins::params::service_provider,
 ) inherits jenkins::params {
   validate_string($slave_name)
   validate_string($description)
@@ -158,6 +159,7 @@ class jenkins::slave (
   validate_bool($enable)
   validate_string($source)
   validate_string($proxy_server)
+  validate_string($service_provider)
 
   $client_jar = "swarm-client-${version}-jar-with-dependencies.jar"
   $client_url = $source ? {
@@ -228,7 +230,7 @@ class jenkins::slave (
       $manage_user_home = true
       $sysv_init        = '/etc/init.d/jenkins-slave'
 
-      if $::systemd {
+      if $service_provider == 'systemd' {
         jenkins::systemd { 'jenkins-slave':
           user   => $slave_user,
           libdir => $slave_home,
